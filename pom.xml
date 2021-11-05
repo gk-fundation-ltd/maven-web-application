@@ -102,10 +102,10 @@
 	      <url>http://18.117.170.147:9980/gopi/repository/wallmart-releases/</url>
 	    </repository>
 	    
-	    <snapshotRepository>
+	 <!--   <snapshotRepository>
 	      <id>nexus</id>
 	      <name>wallmart-Snapshot Nexus Repository </name>
-	      <url>http://18.117.170.147:9980/gopi/repository/wallmart-snapshot//</url>
+	      <url>http://18.117.170.147:9980/gopi/repository/wallmart-snapshot//</url> -->
 	    </snapshotRepository>
 	    
 	</distributionManagement>
