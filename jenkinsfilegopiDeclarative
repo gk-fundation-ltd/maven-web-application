@@ -1,0 +1,85 @@
+pipeline
+{
+    
+agent any
+
+tools
+{
+maven 'maven3.8.3'    
+}
+
+triggers{
+//poll SCM    
+pollSCM('* * * * *')
+//Bulid periodically
+//cron('* * * * *')
+//GitHub Webhook
+//githubPush()
+}
+
+options{
+//Add the timestamp to the console output
+timestamps()
+//Discard old buids
+buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5'))
+}
+stages
+{
+  stage('CheckOutCode')
+  {
+  steps{
+  git branch: 'development', credentialsId: 'cbeef1a9-5fd1-45d8-a7af-1ab1ab06ab00', url: 'https://github.com/gk-fundation-ltd/maven-web-application.git'
+      }
+     }
+  stage('Bulid')
+  {
+   steps{
+   sh "mvn clean package"       
+       
+   }      
+  }
+  
+/* stage('ExcuteSonarQubeReport')
+  {
+  steps{
+  sh "mvn clean sonar:sonar"      
+  }      
+  }
+  
+  stage('UploadArtifactIntoNexus')
+  {
+  steps{
+  sh "mvn clean deploy"      
+  }      
+  }
+  */
+  
+  stage('DeployAppintoTomcatServer')
+  {
+  steps{
+  sshagent(['d86e9e50-0196-4a7a-854a-36f26f743e6b']) {
+    sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@3.129.210.15:/opt/apache-tomcat-9.0.54/webapps"
+    }      
+  }      
+  }
+  
+}
+
+post{
+    
+  success{
+    emailext body: '''Bulid Over - Declarative way..
+
+    Regards,
+    Gopi,
+    9494418464''', subject: 'Build is successfull - Declarative way..', to: 'gopikrishna.dadi123@gmail.com'  
+  }
+  failure{
+        emailext body: '''Build is  failed - Declarative way..
+
+    Regards,
+    Gopi,
+    9494418464''', subject: 'Build is over - Declarative way..', to: 'gopikrishna.dadi123@gmail.com'    
+  }
+}
+}
